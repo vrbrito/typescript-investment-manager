@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { Order } from "./order";
-import { OperationTypes } from "./order.types";
+import { Transaction } from "./transaction";
+import { OperationTypes } from "./transaction.types";
 import { Asset } from "../value_objects/asset";
 import { AssetClasses } from "../value_objects/asset.types";
 
 const sampleAsset = new Asset("HSML11", AssetClasses.FIIS);
 
-describe("order entity", () => {
+describe("transaction entity", () => {
   it.each([
     [100, 10, 1000],
     [20, 4, 80],
@@ -16,7 +16,7 @@ describe("order entity", () => {
     (quantity, unitPrice, expectedTotal) => {
       const currentDate = new Date();
 
-      const order = new Order(
+      const transaction = new Transaction(
         currentDate,
         "Vitor",
         "Inter",
@@ -26,7 +26,7 @@ describe("order entity", () => {
         unitPrice
       );
 
-      expect(order.total).toBe(expectedTotal);
+      expect(transaction.total).toBe(expectedTotal);
     }
   );
 
@@ -34,7 +34,7 @@ describe("order entity", () => {
     ["2023-01-01T00:00:00.000Z", 2023],
     ["2022-12-31T00:00:00.000Z", 2022],
   ])("year property for (date: %s) should be (%d)", (date, expectedYear) => {
-    const order = new Order(
+    const transaction = new Transaction(
       new Date(date),
       "Vitor",
       "Inter",
@@ -44,14 +44,14 @@ describe("order entity", () => {
       10
     );
 
-    expect(order.year).toBe(expectedYear);
+    expect(transaction.year).toBe(expectedYear);
   });
 
   it.each([
     ["2023-06-01T00:00:00.000Z", 6],
     ["2022-12-31T00:00:00.000Z", 12],
   ])("month property for (date: %s) should be (%d)", (date, expectedMonth) => {
-    const order = new Order(
+    const transaction = new Transaction(
       new Date(date),
       "Vitor",
       "Inter",
@@ -61,6 +61,6 @@ describe("order entity", () => {
       10
     );
 
-    expect(order.month).toBe(expectedMonth);
+    expect(transaction.month).toBe(expectedMonth);
   });
 });

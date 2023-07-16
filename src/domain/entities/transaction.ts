@@ -1,7 +1,7 @@
 import { Asset } from "../value_objects/asset";
-import { OperationTypes } from "./order.types";
+import { OperationTypes } from "./transaction.types";
 
-export class Order {
+export class Transaction {
   public readonly date: Date;
   public readonly owner: string;
   public readonly broker: string;
