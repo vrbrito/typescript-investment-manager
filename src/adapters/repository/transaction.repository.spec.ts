@@ -6,37 +6,29 @@ import { Asset } from "../../domain/value_objects/asset";
 import { AssetClasses } from "../../domain/value_objects/asset.types";
 
 const sampleAsset = new Asset("HSML11", AssetClasses.FIIS);
-const sampleTransaction = new Transaction(
-  new Date(),
-  "Vitor",
-  "Inter",
-  sampleAsset,
-  OperationTypes.BUY,
-  100,
-  10
-);
+const sampleTransaction = new Transaction(new Date(), "Vitor", "Inter", sampleAsset, OperationTypes.BUY, 100, 10);
 
-describe("transaction in memory repository", () => {
-  it("add transaction", async () => {
-    const repo = new InMemoryTransactionRepository();
+describe("transaction db repository", () => {
+	it("add transaction", async () => {
+		const repo = new InMemoryTransactionRepository();
 
-    await repo.add(sampleTransaction);
+		await repo.add(sampleTransaction);
 
-    const transactions = repo["_transactions"];
+		const transactions = repo.transactions;
 
-    expect(transactions).toContain(sampleTransaction);
-    expect(transactions.length).toBe(1);
-  });
+		expect(transactions).toContain(sampleTransaction);
+		expect(transactions.length).toBe(1);
+	});
 
-  it("findAll transactions", async () => {
-    const repo = new InMemoryTransactionRepository([]);
+	it("findAll transactions", async () => {
+		const repo = new InMemoryTransactionRepository([]);
 
-    let transactions = await repo.findAll();
-    expect(transactions).toEqual([]);
+		let transactions = await repo.findAll();
+		expect(transactions).toEqual([]);
 
-    repo["_transactions"].push(sampleTransaction);
+		repo.transactions.push(sampleTransaction);
 
-    transactions = await repo.findAll();
-    expect(transactions).toEqual([sampleTransaction]);
-  });
+		transactions = await repo.findAll();
+		expect(transactions).toEqual([sampleTransaction]);
+	});
 });
