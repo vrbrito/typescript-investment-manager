@@ -3,6 +3,9 @@ import { type Asset } from "../value_objects/asset";
 import { type Transaction } from "./transaction";
 import { OperationTypes, signalMap } from "./transaction.types";
 
+const sortByDate = (a: Transaction, b: Transaction): number => a.date.getTime() - b.date.getTime();
+const isBuyOperation = (transaction: Transaction): boolean => transaction.operationType === OperationTypes.BUY;
+
 export class Position {
 	public constructor(
 		public readonly asset: Asset,
@@ -11,12 +14,26 @@ export class Position {
 		this.validate();
 	}
 
-	private buyTransactions(): Transaction[] {
-		return this.transactions.filter((transaction) => transaction.operationType === OperationTypes.BUY);
+	private get openTransactions(): Transaction[] {
+		let openTransactions: Transaction[] = [];
+		let quantity = 0;
+
+		const sortedTransactions = this.transactions.sort(sortByDate);
+
+		for (const transaction of sortedTransactions) {
+			openTransactions.push(transaction);
+			quantity += signalMap[transaction.operationType] * transaction.quantity;
+
+			if (quantity === 0) {
+				openTransactions = [];
+			}
+		}
+
+		return openTransactions;
 	}
 
 	public get quantity(): number {
-		return this.transactions.reduce(
+		return this.openTransactions.reduce(
 			(sum, transaction) => sum + signalMap[transaction.operationType] * transaction.quantity,
 			0,
 		);
@@ -27,12 +44,10 @@ export class Position {
 			return 0;
 		}
 
-		const buyTransactions = this.buyTransactions();
+		const buyTransactions = this.openTransactions.filter(isBuyOperation);
 
 		const buyQuantity = buyTransactions.reduce((sum, transaction) => sum + transaction.quantity, 0);
-		const buyUnitPrice = buyTransactions.reduce((sum, transaction) => sum + transaction.total / buyQuantity, 0);
-
-		return buyUnitPrice;
+		return buyTransactions.reduce((sum, transaction) => sum + transaction.total / buyQuantity, 0);
 	}
 
 	public get total(): number {
@@ -49,10 +64,6 @@ export class Position {
 
 		if (this.quantity < 0) {
 			throw new InvalidPosition("quantity is negative");
-		}
-
-		if (this.unitPrice < 0) {
-			throw new InvalidPosition("unitPrice is negative");
 		}
 	}
 

@@ -1,6 +1,6 @@
 import { InvalidTransaction } from "../exceptions/transaction";
 import { type Asset } from "../value_objects/asset";
-import { type OperationTypes, signalMap } from "./transaction.types";
+import { signalMap, type OperationTypes } from "./transaction.types";
 
 export class Transaction {
 	public constructor(

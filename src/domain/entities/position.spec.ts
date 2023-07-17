@@ -11,6 +11,7 @@ describe("position entity", () => {
 		[[100, -50], 50],
 		[[100], 100],
 		[[100, 100, 100, -300], 0],
+		[[100, -100, 200], 200],
 	])("quantity property", (quantities, expectedQuantity) => {
 		const transactions = quantities.map((quantity) =>
 			transactionFactory.build({
@@ -30,6 +31,23 @@ describe("position entity", () => {
 		[[10, 10, -5], 10],
 		[[10, 20, -5], 15],
 	])("unitPrice property", (unitPrices, expectedQuantity) => {
+		const transactions = unitPrices.map((unitPrice) =>
+			transactionFactory.build({
+				quantity: 100,
+				unitPrice: Math.abs(unitPrice),
+				operationType: unitPrice > 0 ? OperationTypes.BUY : OperationTypes.SELL,
+			}),
+		);
+
+		const position = positionFactory.build({ transactions });
+
+		expect(position.unitPrice).toBe(expectedQuantity);
+	});
+
+	it.each([
+		[[10, -10, 20], 20],
+		[[10, -10, 10, 10, -10, -10, 20], 20],
+	])("unitPrice property only takes openTransactions into account", (unitPrices, expectedQuantity) => {
 		const transactions = unitPrices.map((unitPrice) =>
 			transactionFactory.build({
 				quantity: 100,
