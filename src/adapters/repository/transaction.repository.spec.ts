@@ -1,22 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { InMemoryTransactionRepository } from "./transaction.repository";
-import { Transaction } from "../../domain/entities/transaction";
-import { OperationTypes } from "../../domain/entities/transaction.types";
-import { Asset } from "../../domain/value_objects/asset";
-import { AssetClasses } from "../../domain/value_objects/asset.types";
+import { transactionFactory } from "../../shared/testing/factories/transaction";
 
-const sampleAsset = new Asset("HSML11", AssetClasses.FIIS);
-const sampleTransaction = new Transaction(new Date(), "Vitor", "Inter", sampleAsset, OperationTypes.BUY, 100, 10);
+const transaction = transactionFactory.build();
 
 describe("transaction db repository", () => {
 	it("add transaction", async () => {
 		const repo = new InMemoryTransactionRepository();
 
-		await repo.add(sampleTransaction);
+		await repo.add(transaction);
 
 		const transactions = repo.transactions;
 
-		expect(transactions).toContain(sampleTransaction);
+		expect(transactions).toContain(transaction);
 		expect(transactions.length).toBe(1);
 	});
 
@@ -26,9 +22,9 @@ describe("transaction db repository", () => {
 		let transactions = await repo.findAll();
 		expect(transactions).toEqual([]);
 
-		repo.transactions.push(sampleTransaction);
+		repo.transactions.push(transaction);
 
 		transactions = await repo.findAll();
-		expect(transactions).toEqual([sampleTransaction]);
+		expect(transactions).toEqual([transaction]);
 	});
 });

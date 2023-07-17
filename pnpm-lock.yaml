@@ -32,6 +32,9 @@ devDependencies:
   eslint-plugin-promise:
     specifier: ^6.1.1
     version: 6.1.1(eslint@8.45.0)
+  fishery:
+    specifier: ^2.2.2
+    version: 2.2.2
   prettier:
     specifier: ^3.0.0
     version: 3.0.0
@@ -1426,6 +1429,12 @@ packages:
       path-exists: 4.0.0
     dev: true
 
+  /fishery@2.2.2:
+    resolution: {integrity: sha512-jeU0nDhPHJkupmjX+r9niKgVMTBDB8X+U/pktoGHAiWOSyNlMd0HhmqnjrpjUOCDPJYaSSu4Ze16h6dZOKSp2w==}
+    dependencies:
+      lodash.mergewith: 4.6.2
+    dev: true
+
   /flat-cache@3.0.4:
     resolution: {integrity: sha512-dm9s5Pw7Jc0GvMYbshN6zchCA9RgQlzzEZX3vylR9IqFfS8XciblUXOKfW6SiuJ0e13eDYZoZV5wdrev7P3Nwg==}
     engines: {node: ^10.12.0 || >=12.0.0}
@@ -1867,6 +1876,10 @@ packages:
 
   /lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
+    dev: true
+
+  /lodash.mergewith@4.6.2:
+    resolution: {integrity: sha512-GK3g5RPZWTRSeLSpgP8Xhra+pnjBC56q9FZYe1d5RN3TJ35dbkGy3YqBSMbyCrlbi+CM9Z3Jk5yTL7RCsqboyQ==}
     dev: true
 
   /loupe@2.3.6:
