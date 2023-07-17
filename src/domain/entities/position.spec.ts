@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { transactionFactory } from "../../shared/testing/factories/transaction";
-import { OperationTypes } from "./transaction.types";
-import { positionFactory } from "../../shared/testing/factories/position";
 import { assetFactory } from "../../shared/testing/factories/asset";
+import { positionFactory } from "../../shared/testing/factories/position";
+import { transactionFactory } from "../../shared/testing/factories/transaction";
+import { Position } from "./position";
+import { OperationTypes } from "./transaction.types";
 
 describe("position entity", () => {
 	it.each([
@@ -112,5 +113,29 @@ describe("position entity", () => {
 		expect(() => positionFactory.build({ transactions: [transaction, transaction2] })).toThrowError(
 			"Invalid position: quantity is negative",
 		);
+	});
+
+	it("create positions", () => {
+		const asset1 = assetFactory.build({ ticker: "Asset 1" });
+		const asset2 = assetFactory.build({ ticker: "Asset 2" });
+
+		const transactionAsset1 = transactionFactory.build({
+			asset: asset1,
+		});
+		const transaction2Asset1 = transactionFactory.build({
+			asset: asset1,
+		});
+		const transactionAsset2 = transactionFactory.build({
+			asset: asset2,
+		});
+
+		const positions = Position.createPositions([transactionAsset1, transaction2Asset1, transactionAsset2]);
+
+		const expectedPosition = new Position(asset1, [transactionAsset1, transaction2Asset1]);
+		const expectedPosition2 = new Position(asset2, [transactionAsset2]);
+
+		expect(positions).toHaveLength(2);
+		expect(positions).toContainEqual(expectedPosition);
+		expect(positions).toContainEqual(expectedPosition2);
 	});
 });

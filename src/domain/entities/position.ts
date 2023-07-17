@@ -11,7 +11,7 @@ export class Position {
 		this.validate();
 	}
 
-	private _buyTransactions(): Transaction[] {
+	private buyTransactions(): Transaction[] {
 		return this.transactions.filter((transaction) => transaction.operationType === OperationTypes.BUY);
 	}
 
@@ -27,7 +27,7 @@ export class Position {
 			return 0;
 		}
 
-		const buyTransactions = this._buyTransactions();
+		const buyTransactions = this.buyTransactions();
 
 		const buyQuantity = buyTransactions.reduce((sum, transaction) => sum + transaction.quantity, 0);
 		const buyUnitPrice = buyTransactions.reduce((sum, transaction) => sum + transaction.total / buyQuantity, 0);
@@ -54,5 +54,21 @@ export class Position {
 		if (this.unitPrice < 0) {
 			throw new InvalidPosition("unitPrice is negative");
 		}
+	}
+
+	static createPositions(transactions: Transaction[]): Position[] {
+		const positions: Record<string, Position> = {};
+
+		for (const transaction of transactions) {
+			const { asset } = transaction;
+			if (!(asset.ticker in positions)) {
+				positions[asset.ticker] = new Position(asset, []);
+			}
+
+			positions[asset.ticker].transactions.push(transaction);
+			positions[asset.ticker].validate();
+		}
+
+		return Object.values(positions);
 	}
 }
