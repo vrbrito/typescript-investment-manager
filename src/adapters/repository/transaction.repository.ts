@@ -6,21 +6,13 @@ export interface TransactionRepository {
 }
 
 export class InMemoryTransactionRepository implements TransactionRepository {
-	private readonly _transactions: Transaction[];
-
-	public constructor(transactions: Transaction[] = []) {
-		this._transactions = transactions;
-	}
+	public constructor(public readonly transactions: Transaction[] = []) {}
 
 	public async add(transaction: Transaction): Promise<void> {
-		this._transactions.push(transaction);
+		this.transactions.push(transaction);
 	}
 
 	public async findAll(): Promise<Transaction[]> {
-		return this._transactions;
-	}
-
-	public get transactions(): Transaction[] {
-		return this._transactions;
+		return this.transactions;
 	}
 }

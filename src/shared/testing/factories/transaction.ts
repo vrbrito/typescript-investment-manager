@@ -3,7 +3,11 @@ import { Transaction } from "../../../domain/entities/transaction";
 import { OperationTypes } from "../../../domain/entities/transaction.types";
 import { assetFactory } from "./asset";
 
-export const transactionFactory = Factory.define<Transaction>(() => {
+export const transactionFactory = Factory.define<Transaction>(({ afterBuild }) => {
+	afterBuild((transaction) => {
+		transaction.validate();
+	});
+
 	const values = {
 		date: new Date(),
 		owner: "Dummy",

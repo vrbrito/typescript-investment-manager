@@ -40,4 +40,20 @@ describe("transaction entity", () => {
 
 		expect(transaction.month).toBe(expectedMonth);
 	});
+
+	it.each([0, -10])("validate throws invalid transaction when quantity: %d is zero or negative", (quantity) => {
+		expect(() =>
+			transactionFactory.build({
+				quantity,
+			}),
+		).toThrowError("Invalid transaction: quantity is zero or negative");
+	});
+
+	it.each([0, -10])("validate throws invalid transaction when unitPrice: %d is zero or negative", (unitPrice) => {
+		expect(() =>
+			transactionFactory.build({
+				unitPrice,
+			}),
+		).toThrowError("Invalid transaction: unitPrice is zero or negative");
+	});
 });

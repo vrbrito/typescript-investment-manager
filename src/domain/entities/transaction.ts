@@ -1,9 +1,8 @@
+import { InvalidTransaction } from "../exceptions/transaction";
 import { type Asset } from "../value_objects/asset";
 import { type OperationTypes, signalMap } from "./transaction.types";
 
 export class Transaction {
-	public readonly isOpenPosition?: boolean;
-
 	public constructor(
 		public readonly date: Date,
 		public readonly owner: string,
@@ -12,7 +11,9 @@ export class Transaction {
 		public readonly operationType: OperationTypes,
 		public readonly quantity: number,
 		public readonly unitPrice: number,
-	) {}
+	) {
+		this.validate();
+	}
 
 	public get total(): number {
 		return signalMap[this.operationType] * Number(this.quantity) * this.unitPrice;
@@ -24,5 +25,15 @@ export class Transaction {
 
 	public get month(): number {
 		return this.date.getUTCMonth() + 1;
+	}
+
+	public validate(): void {
+		if (this.quantity <= 0) {
+			throw new InvalidTransaction("quantity is zero or negative");
+		}
+
+		if (this.unitPrice <= 0) {
+			throw new InvalidTransaction("unitPrice is zero or negative");
+		}
 	}
 }
