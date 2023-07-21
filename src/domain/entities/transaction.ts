@@ -15,8 +15,12 @@ export class Transaction {
 		this.validate();
 	}
 
+	public get signedQuantity(): number {
+		return signalMap[this.operationType] * this.quantity;
+	}
+
 	public get total(): number {
-		return signalMap[this.operationType] * Number(this.quantity) * this.unitPrice;
+		return this.signedQuantity * this.unitPrice;
 	}
 
 	public get year(): number {

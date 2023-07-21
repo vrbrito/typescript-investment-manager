@@ -1,7 +1,7 @@
 import { InvalidPosition } from "../exceptions/position";
 import { type Asset } from "../value_objects/asset";
 import { type Transaction } from "./transaction";
-import { OperationTypes, signalMap } from "./transaction.types";
+import { OperationTypes } from "./transaction.types";
 
 const sortByDate = (a: Transaction, b: Transaction): number => a.date.getTime() - b.date.getTime();
 const isBuyOperation = (transaction: Transaction): boolean => transaction.operationType === OperationTypes.BUY;
@@ -22,7 +22,7 @@ export class Position {
 
 		for (const transaction of sortedTransactions) {
 			openTransactions.push(transaction);
-			quantity += signalMap[transaction.operationType] * transaction.quantity;
+			quantity += transaction.signedQuantity;
 
 			if (quantity === 0) {
 				openTransactions = [];
@@ -33,10 +33,7 @@ export class Position {
 	}
 
 	public get quantity(): number {
-		return this.openTransactions.reduce(
-			(sum, transaction) => sum + signalMap[transaction.operationType] * transaction.quantity,
-			0,
-		);
+		return this.openTransactions.reduce((sum, transaction) => sum + transaction.signedQuantity, 0);
 	}
 
 	public get unitPrice(): number {

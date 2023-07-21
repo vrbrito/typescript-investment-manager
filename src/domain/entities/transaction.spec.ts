@@ -4,6 +4,21 @@ import { transactionFactory } from "../../shared/testing/factories/transaction";
 
 describe("transaction entity", () => {
 	it.each([
+		[100, OperationTypes.BUY, 100],
+		[200, OperationTypes.SELL, -200],
+	])(
+		"signed quantity property for (quantity: %d, operationType: %s) should be (%d)",
+		(quantity, operationType, expectedSignedQuantity) => {
+			const transaction = transactionFactory.build({
+				quantity,
+				operationType,
+			});
+
+			expect(transaction.signedQuantity).toBe(expectedSignedQuantity);
+		},
+	);
+
+	it.each([
 		[100, 10, OperationTypes.BUY, 1000],
 		[15.5, 2, OperationTypes.SELL, -31.0],
 	])(
