@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { InMemoryTransactionRepository } from "./transaction.repository";
 import { transactionFactory } from "../../shared/testing/factories/transaction";
+import { InMemoryTransactionRepository } from "./transaction.repository";
 
 const transaction = transactionFactory.build();
 
-describe("transaction db repository", () => {
+describe("transaction repository", () => {
 	it("add transaction", async () => {
 		const repo = new InMemoryTransactionRepository();
 
