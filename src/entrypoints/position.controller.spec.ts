@@ -22,4 +22,25 @@ describe("position endpoints", () => {
 			})),
 		);
 	});
+
+	it("should list positions by owner", async () => {
+		const selectedOwner = "Test";
+
+		const ownerTransaction = transactionFactory.build({ owner: selectedOwner });
+		const otherTransaction = transactionFactory.build({ owner: "Other" });
+		global.dependencies.transactionRepository.transactions.push(ownerTransaction, otherTransaction);
+
+		const client = supertest(global.app);
+		const { body, status } = await client.get(`/positions/${selectedOwner.toLowerCase()}`);
+
+		const expectedPositions = Position.consolidatePositions([ownerTransaction]);
+
+		expect(status).toEqual(200);
+		expect(body).toEqual(
+			expectedPositions.map((position) => ({
+				...position,
+				transactions: position.transactions.map(convertDateToStr),
+			})),
+		);
+	});
 });

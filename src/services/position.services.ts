@@ -7,3 +7,12 @@ export async function listPositions(transactionRepository: TransactionRepository
 
 	return Position.consolidatePositions(transactions);
 }
+
+export async function listPositionsByOwner(
+	transactionRepository: TransactionRepository,
+	owner: string,
+): Promise<ConsolidatedPosition[]> {
+	const transactions = await transactionRepository.findByOwner(owner);
+
+	return Position.consolidatePositions(transactions);
+}

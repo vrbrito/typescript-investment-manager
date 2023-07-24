@@ -4,7 +4,7 @@ import { InMemoryTransactionRepository } from "./transaction.repository";
 
 const transaction = transactionFactory.build();
 
-describe("transaction repository", () => {
+describe("transaction in memory repository", () => {
 	it("add transaction", async () => {
 		const repo = new InMemoryTransactionRepository();
 
@@ -27,6 +27,23 @@ describe("transaction repository", () => {
 		transactions = await repo.findAll();
 		expect(transactions).toEqual([transaction]);
 	});
+	it("findByOwner transactions", async () => {
+		const selectedOwner = "Vitor";
+
+		const ownerTransaction = transactionFactory.build({ owner: selectedOwner });
+		const otherTransaction = transactionFactory.build({ owner: "Other" });
+
+		const repo = new InMemoryTransactionRepository([]);
+
+		let transactions = await repo.findByOwner(selectedOwner);
+		expect(transactions).toEqual([]);
+
+		repo.transactions.push(ownerTransaction, otherTransaction);
+
+		transactions = await repo.findByOwner(selectedOwner);
+		expect(transactions).toEqual([ownerTransaction]);
+	});
+
 	it("clear all transactions", async () => {
 		const repo = new InMemoryTransactionRepository();
 
