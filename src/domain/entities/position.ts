@@ -1,5 +1,6 @@
 import { InvalidPosition } from "../exceptions/position";
 import { type Asset } from "../value_objects/asset";
+import { type ConsolidatedPosition } from "./position.types";
 import { type Transaction } from "./transaction";
 import { OperationTypes } from "./transaction.types";
 
@@ -64,7 +65,21 @@ export class Position {
 		}
 	}
 
-	static createPositions(transactions: Transaction[]): Position[] {
+	static consolidatePositions(transactions: Transaction[]): ConsolidatedPosition[] {
+		const positions = Position.createPositions(transactions);
+
+		const consolidatedPositions = positions.map((position) => ({
+			total: position.total,
+			unitPrice: position.unitPrice,
+			quantity: position.quantity,
+			asset: position.asset,
+			transactions: position.transactions,
+		}));
+
+		return consolidatedPositions.filter((consolidatedPositions) => consolidatedPositions.total > 0);
+	}
+
+	private static createPositions(transactions: Transaction[]): Position[] {
 		const positions: Record<string, Position> = {};
 
 		for (const transaction of transactions) {
