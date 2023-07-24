@@ -2,13 +2,13 @@ import { Controller, Get, Post } from "@overnightjs/core";
 import { plainToClass } from "class-transformer";
 import { validate } from "class-validator";
 import { type Request, type Response } from "express";
-import { type InMemoryTransactionRepository } from "../adapters/repository/transaction.repository";
+import { type TransactionRepository } from "../adapters/repository/transaction.repository";
 import { TransactionInput } from "../domain/entities/transaction.types";
 import { listTransactions, registerTransaction } from "../services/transaction.services";
 
 @Controller("transactions")
 export class TransactionController {
-	public constructor(private readonly transactionRepository: InMemoryTransactionRepository) {}
+	public constructor(private readonly transactionRepository: TransactionRepository) {}
 
 	@Get("")
 	public async transactions(_: Request, res: Response): Promise<void> {

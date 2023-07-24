@@ -6,7 +6,7 @@ export interface PayoutRepository {
 }
 
 export class InMemoryPayoutRepository implements PayoutRepository {
-	public constructor(public readonly payouts: Payout[] = []) {}
+	public constructor(public payouts: Payout[] = []) {}
 
 	public async add(payout: Payout): Promise<void> {
 		this.payouts.push(payout);
@@ -14,5 +14,9 @@ export class InMemoryPayoutRepository implements PayoutRepository {
 
 	public async findAll(): Promise<Payout[]> {
 		return this.payouts;
+	}
+
+	public clear(): void {
+		this.payouts = [];
 	}
 }

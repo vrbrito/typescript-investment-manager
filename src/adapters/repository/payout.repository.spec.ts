@@ -4,7 +4,7 @@ import { InMemoryPayoutRepository } from "./payout.repository";
 
 const payout = payoutFactory.build();
 
-describe("payout repository", () => {
+describe("payout in memory repository", () => {
 	it("add payout", async () => {
 		const repo = new InMemoryPayoutRepository();
 
@@ -26,5 +26,17 @@ describe("payout repository", () => {
 
 		payouts = await repo.findAll();
 		expect(payouts).toEqual([payout]);
+	});
+
+	it("clear all payouts", async () => {
+		const repo = new InMemoryPayoutRepository();
+
+		repo.payouts.push(...payoutFactory.buildList(2));
+
+		expect(repo.payouts).toHaveLength(2);
+
+		repo.clear();
+
+		expect(repo.payouts).toHaveLength(0);
 	});
 });

@@ -27,4 +27,15 @@ describe("transaction repository", () => {
 		transactions = await repo.findAll();
 		expect(transactions).toEqual([transaction]);
 	});
+	it("clear all transactions", async () => {
+		const repo = new InMemoryTransactionRepository();
+
+		repo.transactions.push(...transactionFactory.buildList(2));
+
+		expect(repo.transactions).toHaveLength(2);
+
+		repo.clear();
+
+		expect(repo.transactions).toHaveLength(0);
+	});
 });
