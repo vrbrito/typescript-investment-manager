@@ -4,6 +4,7 @@ import { type Application } from "express";
 import { InMemoryPayoutRepository } from "../../adapters/repository/payout.repository";
 import { InMemoryTransactionRepository } from "../../adapters/repository/transaction.repository";
 import { PayoutController } from "../../entrypoints/payout.controller";
+import { PositionController } from "../../entrypoints/position.controller";
 import { TransactionController } from "../../entrypoints/transaction.controller";
 
 export class SetupServer extends Server {
@@ -26,9 +27,10 @@ export class SetupServer extends Server {
 		const payoutRepository = new InMemoryPayoutRepository();
 
 		const transactionController = new TransactionController(transactionRepository);
+		const positionController = new PositionController(transactionRepository);
 		const payoutController = new PayoutController(payoutRepository);
 
-		this.addControllers([transactionController, payoutController]);
+		this.addControllers([transactionController, payoutController, positionController]);
 	}
 
 	public getApp(): Application {

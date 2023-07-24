@@ -3,6 +3,7 @@ import { assetFactory } from "../../shared/testing/factories/asset";
 import { positionFactory } from "../../shared/testing/factories/position";
 import { transactionFactory } from "../../shared/testing/factories/transaction";
 import { Position } from "./position";
+import { type ConsolidatedPosition } from "./position.types";
 import { OperationTypes } from "./transaction.types";
 
 describe("position entity", () => {
@@ -133,27 +134,47 @@ describe("position entity", () => {
 		);
 	});
 
-	it("create positions", () => {
+	it("consolidate positions", () => {
 		const asset1 = assetFactory.build({ ticker: "Asset 1" });
 		const asset2 = assetFactory.build({ ticker: "Asset 2" });
 
+		// transactions for asset 1 even out
 		const transactionAsset1 = transactionFactory.build({
 			asset: asset1,
+			operationType: OperationTypes.BUY,
+			quantity: 10,
+			unitPrice: 10,
 		});
 		const transaction2Asset1 = transactionFactory.build({
 			asset: asset1,
+			operationType: OperationTypes.SELL,
+			quantity: 10,
+			unitPrice: 10,
 		});
+
+		// transactions for asset 2
 		const transactionAsset2 = transactionFactory.build({
 			asset: asset2,
+			operationType: OperationTypes.BUY,
+			quantity: 100,
+			unitPrice: 10,
 		});
 
-		const positions = Position.createPositions([transactionAsset1, transaction2Asset1, transactionAsset2]);
+		const consolidatedPositions = Position.consolidatePositions([
+			transactionAsset1,
+			transaction2Asset1,
+			transactionAsset2,
+		]);
 
-		const expectedPosition = new Position(asset1, [transactionAsset1, transaction2Asset1]);
-		const expectedPosition2 = new Position(asset2, [transactionAsset2]);
+		const expectedConsolidatedPosition: ConsolidatedPosition = {
+			asset: asset2,
+			transactions: [transactionAsset2],
+			total: 1000,
+			quantity: 100,
+			unitPrice: 10,
+		};
 
-		expect(positions).toHaveLength(2);
-		expect(positions).toContainEqual(expectedPosition);
-		expect(positions).toContainEqual(expectedPosition2);
+		expect(consolidatedPositions).toHaveLength(1);
+		expect(consolidatedPositions).toContainEqual(expectedConsolidatedPosition);
 	});
 });
