@@ -2,13 +2,13 @@ import { Controller, Get, Post } from "@overnightjs/core";
 import { plainToClass } from "class-transformer";
 import { validate } from "class-validator";
 import { type Request, type Response } from "express";
-import { type InMemoryPayoutRepository } from "../adapters/repository/payout.repository";
+import { type PayoutRepository } from "../adapters/repository/payout.repository";
 import { PayoutInput } from "../domain/entities/payout.types";
 import { listPayouts, registerPayout } from "../services/payout.services";
 
 @Controller("payouts")
 export class PayoutController {
-	public constructor(private readonly payoutRepository: InMemoryPayoutRepository) {}
+	public constructor(private readonly payoutRepository: PayoutRepository) {}
 
 	@Get()
 	public async payouts(_: Request, res: Response): Promise<void> {
