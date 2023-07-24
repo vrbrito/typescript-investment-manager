@@ -10,4 +10,7 @@ beforeAll(() => {
 	server.init();
 
 	global.app = server.getApp();
+
+	// @ts-expect-error Overrides dependencies type to make it specific for tests
+	global.dependencies = server.dependencies;
 });

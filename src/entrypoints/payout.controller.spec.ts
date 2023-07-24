@@ -2,14 +2,18 @@ import { instanceToPlain } from "class-transformer";
 import supertest from "supertest";
 import { describe, expect, it } from "vitest";
 import { payoutFactory } from "../shared/testing/factories/payout";
+import { convertDateToStr } from "../shared/testing/utils";
 
 describe("payout endpoints", () => {
 	it("should list payouts", async () => {
+		const samplePayouts = payoutFactory.buildList(2);
+		global.dependencies.payoutRepository.payouts.push(...samplePayouts);
+
 		const client = supertest(global.app);
 		const { body, status } = await client.get("/payouts");
 
 		expect(status).toEqual(200);
-		expect(body).toEqual([]);
+		expect(body).toEqual(samplePayouts.map(convertDateToStr));
 	});
 
 	it("should fail registering payout (validation error)", async () => {
