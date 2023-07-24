@@ -1,7 +1,10 @@
-import { Controller, Get } from "@overnightjs/core";
+import { Controller, Get, Post } from "@overnightjs/core";
+import { plainToClass } from "class-transformer";
+import { validate } from "class-validator";
 import { type Request, type Response } from "express";
 import { type InMemoryTransactionRepository } from "../adapters/repository/transaction.repository";
-import { listTransactions } from "../services/transaction.services";
+import { TransactionInput } from "../domain/entities/transaction.types";
+import { listTransactions, registerTransaction } from "../services/transaction.services";
 
 @Controller("transactions")
 export class TransactionController {
@@ -12,5 +15,20 @@ export class TransactionController {
 		const transactions = await listTransactions(this.transactionRepository);
 
 		res.status(200).send(transactions);
+	}
+
+	@Post()
+	public async addTransaction(req: Request, res: Response): Promise<void> {
+		const transactionInput: TransactionInput = plainToClass(TransactionInput, req.body);
+
+		await validate(transactionInput, { validationError: { target: false } }).then((errors) => {
+			if (errors.length > 0) {
+				res.status(400).send(errors);
+			}
+		});
+
+		await registerTransaction(this.transactionRepository, transactionInput);
+
+		res.status(201).send();
 	}
 }
