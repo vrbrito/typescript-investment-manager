@@ -1,4 +1,6 @@
-import { type Asset } from "../value_objects/asset";
+import { Type } from "class-transformer";
+import { IsDate, IsDefined, IsEnum, IsPositive, MinLength, ValidateNested } from "class-validator";
+import { Asset } from "../value_objects/asset";
 
 export enum OperationTypes {
 	BUY = "Compra",
@@ -10,12 +12,34 @@ export const signalMap = {
 	[OperationTypes.SELL]: -1,
 };
 
-export interface TransactionInput {
-	date: Date;
-	owner: string;
-	broker: string;
-	asset: Asset;
-	operationType: OperationTypes;
-	quantity: number;
-	unitPrice: number;
+export class TransactionInput {
+	@IsDefined()
+	@IsDate()
+	@Type(() => Date)
+	date!: Date;
+
+	@IsDefined()
+	@MinLength(3)
+	owner!: string;
+
+	@IsDefined()
+	@MinLength(5)
+	broker!: string;
+
+	@IsDefined()
+	@ValidateNested()
+	@Type(() => Asset)
+	asset!: Asset;
+
+	@IsDefined()
+	@IsEnum(OperationTypes)
+	operationType!: OperationTypes;
+
+	@IsDefined()
+	@IsPositive()
+	quantity!: number;
+
+	@IsDefined()
+	@IsPositive()
+	unitPrice!: number;
 }

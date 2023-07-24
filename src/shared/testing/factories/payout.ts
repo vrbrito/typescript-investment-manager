@@ -2,11 +2,7 @@ import { Factory } from "fishery";
 import { Payout } from "../../../domain/entities/payout";
 import { assetFactory } from "./asset";
 
-export const payoutFactory = Factory.define<Payout>(({ afterBuild }) => {
-	afterBuild((payout) => {
-		payout.validate();
-	});
-
+export const payoutFactory = Factory.define<Payout>(() => {
 	const values = {
 		date: new Date(),
 		owner: "Dummy",
