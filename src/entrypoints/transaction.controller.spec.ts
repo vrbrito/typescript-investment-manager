@@ -2,14 +2,18 @@ import { instanceToPlain } from "class-transformer";
 import supertest from "supertest";
 import { describe, expect, it } from "vitest";
 import { transactionFactory } from "../shared/testing/factories/transaction";
+import { convertDateToStr } from "../shared/testing/utils";
 
 describe("transaction endpoints", () => {
 	it("should list transactions", async () => {
+		const sampleTransactions = transactionFactory.buildList(2);
+		global.dependencies.transactionRepository.transactions.push(...sampleTransactions);
+
 		const client = supertest(global.app);
 		const { body, status } = await client.get("/transactions");
 
 		expect(status).toEqual(200);
-		expect(body).toEqual([]);
+		expect(body).toEqual(sampleTransactions.map(convertDateToStr));
 	});
 
 	it("should fail registering transaction (validation error)", async () => {
