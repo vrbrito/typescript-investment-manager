@@ -1,18 +1,24 @@
 import { describe, expect, it } from "vitest";
+import { assetFactory } from "../../shared/testing/factories/asset";
 import { transactionFactory } from "../../shared/testing/factories/transaction";
 import { InMemoryTransactionRepository } from "./transaction.repository";
 
-const transaction = transactionFactory.build();
+const asset = assetFactory.build({ ticker: "WEGE3" });
+const allTransactions = [
+	transactionFactory.build({ asset }),
+	transactionFactory.build({ owner: "Cinara", broker: "Rico" }),
+	transactionFactory.build({ broker: "Rico" }),
+];
 
 describe("transaction in memory repository", () => {
 	it("add transaction", async () => {
 		const repo = new InMemoryTransactionRepository();
 
-		await repo.add(transaction);
+		await repo.add(allTransactions[0]);
 
 		const transactions = repo.transactions;
 
-		expect(transactions).toContain(transaction);
+		expect(transactions).toContain(allTransactions[0]);
 		expect(transactions.length).toBe(1);
 	});
 
@@ -22,26 +28,29 @@ describe("transaction in memory repository", () => {
 		let transactions = await repo.findAll();
 		expect(transactions).toEqual([]);
 
-		repo.transactions.push(transaction);
+		repo.transactions.push(...allTransactions);
 
 		transactions = await repo.findAll();
-		expect(transactions).toEqual([transaction]);
+		expect(transactions).toEqual(allTransactions);
 	});
-	it("findByOwner transactions", async () => {
-		const selectedOwner = "Vitor";
 
-		const ownerTransaction = transactionFactory.build({ owner: selectedOwner });
-		const otherTransaction = transactionFactory.build({ owner: "Other" });
-
+	it.each([
+		["empty", {}, allTransactions],
+		["only asset", { asset }, allTransactions.slice(0, 1)],
+		["only owner", { owner: "Cinara" }, allTransactions.slice(1, 2)],
+		["only broker", { broker: "Rico" }, allTransactions.slice(1, 3)],
+		["some values", { owner: "Cinara", broker: "Rico" }, allTransactions.slice(1, 2)],
+		["all values", { asset, owner: "Cinara", broker: "Rico" }, []],
+	])("findBy transactions (%s)", async (_, filterBy, expectedTransactions) => {
 		const repo = new InMemoryTransactionRepository([]);
 
-		let transactions = await repo.findByOwner(selectedOwner);
+		let transactions = await repo.findBy(filterBy);
 		expect(transactions).toEqual([]);
 
-		repo.transactions.push(ownerTransaction, otherTransaction);
+		repo.transactions.push(...allTransactions);
 
-		transactions = await repo.findByOwner(selectedOwner);
-		expect(transactions).toEqual([ownerTransaction]);
+		transactions = await repo.findBy(filterBy);
+		expect(transactions).toEqual(expectedTransactions);
 	});
 
 	it("clear all transactions", async () => {
