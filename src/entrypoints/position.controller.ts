@@ -8,18 +8,18 @@ export class PositionController {
 	public constructor(private readonly transactionRepository: TransactionRepository) {}
 
 	@Get()
-	public async positions(_: Request, res: Response): Promise<void> {
+	public async positions(_: Request, res: Response): Promise<Response> {
 		const payouts = await listPositions(this.transactionRepository);
 
-		res.status(200).send(payouts);
+		return res.status(200).send(payouts);
 	}
 
 	@Get(":owner")
-	public async positionsByOwner(req: Request, res: Response): Promise<void> {
+	public async positionsByOwner(req: Request, res: Response): Promise<Response> {
 		const selectedOwner = req.params.owner;
 
 		const payouts = await listPositionsByOwner(this.transactionRepository, selectedOwner);
 
-		res.status(200).send(payouts);
+		return res.status(200).send(payouts);
 	}
 }

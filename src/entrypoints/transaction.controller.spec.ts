@@ -1,6 +1,8 @@
 import { instanceToPlain } from "class-transformer";
 import supertest from "supertest";
 import { describe, expect, it } from "vitest";
+import { OperationTypes } from "../domain/entities/transaction.types";
+import { assetFactory } from "../shared/testing/factories/asset";
 import { transactionFactory } from "../shared/testing/factories/transaction";
 import { convertDateToStr } from "../shared/testing/utils";
 
@@ -16,7 +18,30 @@ describe("transaction endpoints", () => {
 		expect(body).toEqual(sampleTransactions.map(convertDateToStr));
 	});
 
-	it("should fail registering transaction (validation error)", async () => {
+	it("should succeed registering transaction", async () => {
+		const sampleTransaction = transactionFactory.build();
+		const input = instanceToPlain(sampleTransaction);
+
+		const client = supertest(global.app);
+		const { body, status } = await client.post("/transactions").send(input);
+
+		expect(status).toEqual(201);
+		expect(body).toEqual({});
+	});
+
+	it("should fail registering transaction, invalid transaction due to position", async () => {
+		const asset = assetFactory.build({ ticker: "WEGE3" });
+		const sampleTransaction = transactionFactory.build({ asset, operationType: OperationTypes.SELL });
+		const input = instanceToPlain(sampleTransaction);
+
+		const client = supertest(global.app);
+		const { body, status } = await client.post("/transactions").send(input);
+
+		expect(status).toEqual(400);
+		expect(body).toEqual(["Invalid transaction: invalid quantity for current position"]);
+	});
+
+	it("should fail registering transaction, validation error", async () => {
 		const client = supertest(global.app);
 		const { body, status } = await client.post("/transactions").send({});
 
@@ -78,16 +103,5 @@ describe("transaction endpoints", () => {
 				property: "unitPrice",
 			},
 		]);
-	});
-
-	it("should succeed registering transaction", async () => {
-		const sampleTransaction = transactionFactory.build();
-		const input = instanceToPlain(sampleTransaction);
-
-		const client = supertest(global.app);
-		const { body, status } = await client.post("/transactions").send(input);
-
-		expect(status).toEqual(201);
-		expect(body).toEqual({});
 	});
 });
