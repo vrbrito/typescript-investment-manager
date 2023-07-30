@@ -11,24 +11,23 @@ export class PayoutController {
 	public constructor(private readonly payoutRepository: PayoutRepository) {}
 
 	@Get()
-	public async payouts(_: Request, res: Response): Promise<void> {
+	public async payouts(_: Request, res: Response): Promise<Response> {
 		const payouts = await listPayouts(this.payoutRepository);
 
-		res.status(200).send(payouts);
+		return res.status(200).send(payouts);
 	}
 
 	@Post()
-	public async addPayout(req: Request, res: Response): Promise<void> {
+	public async addPayout(req: Request, res: Response): Promise<Response> {
 		const payoutInput: PayoutInput = plainToClass(PayoutInput, req.body);
 
-		await validate(payoutInput, { validationError: { target: false } }).then((errors) => {
-			if (errors.length > 0) {
-				res.status(400).send(errors);
-			}
-		});
+		const errors = await validate(payoutInput, { validationError: { target: false } });
+		if (errors.length > 0) {
+			return res.status(400).send(errors);
+		}
 
 		await registerPayout(this.payoutRepository, payoutInput);
 
-		res.status(201).send();
+		return res.status(201).send();
 	}
 }

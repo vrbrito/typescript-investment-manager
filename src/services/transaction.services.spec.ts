@@ -24,6 +24,23 @@ describe("transaction services", async () => {
 		expect(repo.transactions).toContainEqual(expectedTransaction);
 	});
 
+	it("register transaction, fails due to invalid position", async () => {
+		const repo = new InMemoryTransactionRepository([]);
+		const input: TransactionInput = {
+			date: new Date(),
+			owner: "Test",
+			broker: "Bank",
+			asset: assetFactory.build(),
+			operationType: OperationTypes.SELL,
+			quantity: 100,
+			unitPrice: 10,
+		};
+
+		await expect(async () => {
+			await registerTransaction(repo, input);
+		}).rejects.toThrow("Invalid transaction: invalid quantity for current position");
+	});
+
 	it("list transactions", async () => {
 		const sampleTransactions = transactionFactory.buildList(2);
 
