@@ -3,8 +3,8 @@ import { IsDate, IsDefined, IsEnum, IsPositive, MinLength, ValidateNested } from
 import { Asset } from "../value_objects/asset";
 
 export enum OperationTypes {
-	BUY = "Compra",
-	SELL = "Venda",
+	BUY = "buy",
+	SELL = "sell",
 }
 
 export const signalMap = {

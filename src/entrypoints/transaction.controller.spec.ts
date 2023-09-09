@@ -82,7 +82,7 @@ describe("transaction endpoints", () => {
 				children: [],
 				constraints: {
 					isDefined: "operationType should not be null or undefined",
-					isEnum: "operationType must be one of the following values: Compra, Venda",
+					isEnum: "operationType must be one of the following values: buy, sell",
 				},
 				property: "operationType",
 			},
