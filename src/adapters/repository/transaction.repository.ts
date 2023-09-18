@@ -1,5 +1,8 @@
+import { type Repository } from "typeorm";
 import { type Transaction } from "../../domain/entities/transaction";
 import { type Asset } from "../../domain/value_objects/asset";
+import { AppDataSource } from "../../external/db/data-source";
+import { TransactionModel } from "../../external/db/models/transaction";
 
 export interface TransactionFilter {
 	owner?: string;
@@ -41,5 +44,30 @@ export class InMemoryTransactionRepository implements TransactionRepository {
 
 	public clear(): void {
 		this.transactions = [];
+	}
+}
+
+export class DBTransactionRepository implements TransactionRepository {
+	private get manager(): Repository<TransactionModel> {
+		return AppDataSource.getRepository(TransactionModel);
+	}
+
+	private convertToEntities(transactionModels: TransactionModel[]): Transaction[] {
+		return transactionModels.map((transactionModel) => transactionModel.toEntity());
+	}
+
+	public async add(transaction: Transaction): Promise<void> {
+		const transactionModel = this.manager.create({ owner: transaction.owner });
+		await this.manager.save(transactionModel);
+	}
+
+	public async findAll(): Promise<Transaction[]> {
+		const transactionModels = await this.manager.find({});
+		return this.convertToEntities(transactionModels);
+	}
+
+	public async findBy(filter: TransactionFilter): Promise<Transaction[]> {
+		const transactionModels = await this.manager.findBy(filter);
+		return this.convertToEntities(transactionModels);
 	}
 }

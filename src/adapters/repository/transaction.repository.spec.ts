@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { AppDataSource } from "../../external/db/data-source";
+import { TransactionModel } from "../../external/db/models/transaction";
 import { assetFactory } from "../../shared/testing/factories/asset";
 import { transactionFactory } from "../../shared/testing/factories/transaction";
-import { InMemoryTransactionRepository } from "./transaction.repository";
+import { DBTransactionRepository, InMemoryTransactionRepository } from "./transaction.repository";
 
 const asset = assetFactory.build({ ticker: "WEGE3" });
 const allTransactions = [
@@ -63,5 +65,21 @@ describe("transaction in memory repository", () => {
 		repo.clear();
 
 		expect(repo.transactions).toHaveLength(0);
+	});
+});
+
+describe("transaction db repository", () => {
+	it("add transaction", async () => {
+		const repo = new DBTransactionRepository();
+
+		expect(AppDataSource.isConnected).toBeTruthy();
+
+		await repo.add(allTransactions[0]);
+
+		const manager = AppDataSource.getRepository(TransactionModel);
+
+		const transactions = await manager.find();
+
+		expect(transactions).toContain(allTransactions[0]);
 	});
 });

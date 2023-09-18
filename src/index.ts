@@ -1,4 +1,5 @@
 import config from "config";
+import "reflect-metadata";
 import { type AppConfig } from "../config/config.types";
 import { SetupServer } from "./external/server";
 
